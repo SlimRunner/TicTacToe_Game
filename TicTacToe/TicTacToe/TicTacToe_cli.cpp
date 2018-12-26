@@ -6,12 +6,12 @@
 
 static const char ASTERISK_SEPARATOR[65] = "****************************************************************";
 
-char prompt_getChar(const char *, bool);
+static char prompt_getChar(const char *, bool);
 
 tic::TicTacToe_cli::TicTacToe_cli() :
 	m_thisMatch(t3g::T3_cell_state::X_STATE)
 {
-	//nothing else to do
+	m_starting_symbol = m_thisMatch.get_curr_symbol();
 }
 
 tic::TicTacToe_cli::~TicTacToe_cli()
@@ -44,7 +44,7 @@ tic::OptMainMenu tic::TicTacToe_cli::runMainMenu()
 		do {} while (runPlayMenu() != OptPlayMatch::SUB_EXIT);
 		break;
 	case tic::OptMainMenu::MNU_SETTINGS:
-		std::cout << "\nThis is not implemented yet.\n\a";
+		do {} while (runSettings() != OptSettings::SUB_EXIT);
 		break;
 	case tic::OptMainMenu::MNU_EXIT:
 		break;
@@ -62,11 +62,11 @@ tic::OptPlayMatch tic::TicTacToe_cli::runPlayMenu()
 	std::cout << "\n" << ASTERISK_SEPARATOR;
 	std::cout << "\nMAIN MENU > PLAY MATCH\n\n"; //cascade pass the menu name as argument to the next menu
 
-	std::cout << "Normal match with 2 players\t(" << ENUM_TO_INT(OptPlayMatch::SUB_1V1) << ")\n";
-	/*std::cout << "Normal match against AI\t\t(" << ENUM_TO_INT(OptPlayMatch::SUB_AI) << ")\n";
-	std::cout << "Reverse match with 2 players\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_1V1) << ")\n";
-	std::cout << "Reverse match against AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_AI) << ")\n";*/
-	std::cout << "Back to main menu\t\t(" << ENUM_TO_INT(OptPlayMatch::SUB_EXIT) << ")\n";
+	std::cout << "1v1 match\t(" << ENUM_TO_INT(OptPlayMatch::SUB_1V1) << ")\n";
+	/*std::cout << "Match vs AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_AI) << ")\n";
+	std::cout << "1v1 rev match\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_1V1) << ")\n";
+	std::cout << "Rev Match vs AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_AI) << ")\n";*/
+	std::cout << "Go back\t\t(" << ENUM_TO_INT(OptPlayMatch::SUB_EXIT) << ")\n";
 	userSel = static_cast<OptPlayMatch>(prompt_getChar("\nSelect an option: ", true));
 
 	switch (userSel)
@@ -81,6 +81,45 @@ tic::OptPlayMatch tic::TicTacToe_cli::runPlayMenu()
 	case tic::OptPlayMatch::SUB_REV_AI:
 		break;*/
 	case tic::OptPlayMatch::SUB_EXIT:
+		break;
+	default:
+		std::cout << "\nThat is not a valid command.\n\a";
+		break;
+	}
+
+	return userSel;
+}
+
+tic::OptSettings tic::TicTacToe_cli::runSettings()
+{
+	OptSettings userSel;
+
+	std::cout << "\n" << ASTERISK_SEPARATOR;
+	std::cout << "\nMAIN MENU > SETTINGS\n\n"; //cascade pass the menu name as argument to the next menu
+
+	std::cout << "Default symbol\t(" << ENUM_TO_INT(OptSettings::SUB_DEF_SYMBOL) << ") Current symbol is " << getSymbol(m_starting_symbol) << "\n";
+	/*std::cout << "AI difficulty\t\t(" << ENUM_TO_INT(OptSettings::SUB_AI_DIFFICULTY) << ")\n";*/
+	std::cout << "Go back\t\t(" << ENUM_TO_INT(OptSettings::SUB_EXIT) << ")\n";
+	userSel = static_cast<OptSettings>(prompt_getChar("\nSelect an option: ", true));
+
+	switch (userSel)
+	{
+	case tic::OptSettings::SUB_DEF_SYMBOL:
+		if (m_starting_symbol == t3g::T3_cell_state::X_STATE)
+		{
+			m_starting_symbol = t3g::T3_cell_state::O_STATE;
+		}
+		else
+		{
+			m_starting_symbol = t3g::T3_cell_state::X_STATE;
+		}
+
+		m_thisMatch.clear_board(m_starting_symbol);
+
+		break;
+		/*case tic::OptSettings::SUB_AI_DIFFICULTY:
+			break;*/
+	case tic::OptSettings::SUB_EXIT:
 		break;
 	default:
 		std::cout << "\nThat is not a valid command.\n\a";
@@ -170,7 +209,7 @@ void tic::TicTacToe_cli::runMatch()
 
 	std::cout << "press any key to continue...";
 	std::cin.get(); //pause
-	m_thisMatch.clear_board();
+	m_thisMatch.clear_board(m_starting_symbol);
 }
 
 char tic::TicTacToe_cli::getSymbol(t3g::T3_cell_state thisCell) const
@@ -240,7 +279,7 @@ t3g::cell_loc tic::TicTacToe_cli::getSerialFromKeypad(char inCharacter) const
 ///<param name = "message">String literal that will be shown before requesting the input.</param>
 ///<param name = "makeUpper">Determines if the output charater is converted upper case.</param>
 ///<returns>Returns the character value entered by user.</returns>
-char prompt_getChar(const char * message, bool makeUpper)
+static char prompt_getChar(const char * message, bool makeUpper)
 {
 	std::string inStr;
 	bool firstLoop = true;

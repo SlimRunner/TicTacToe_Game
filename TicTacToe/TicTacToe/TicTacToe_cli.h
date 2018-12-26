@@ -21,6 +21,20 @@ namespace tic
 		SUB_EXIT = '0'
 	};
 
+	enum class OptSettings : char
+	{
+		SUB_DEF_SYMBOL = '1',
+		SUB_AI_DIFFICULTY = '2',
+		SUB_EXIT = '0'
+	};
+
+	enum class AI_Level
+	{
+		AI_EASY = 0,
+		AI_MEDIUM = 1,
+		AI_HARD = 2
+	};
+
 	class TicTacToe_cli
 	{
 	public:
@@ -32,8 +46,11 @@ namespace tic
 	private:
 		t3g::T3_Match m_thisMatch;
 
+		t3g::T3_cell_state m_starting_symbol;
+
 		OptMainMenu runMainMenu();
 		OptPlayMatch runPlayMenu();
+		OptSettings runSettings();
 
 		void runMatch();
 		char getSymbol(t3g::T3_cell_state) const;

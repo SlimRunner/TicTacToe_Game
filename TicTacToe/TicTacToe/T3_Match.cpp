@@ -75,6 +75,18 @@ void t3g::T3_Match::clear_board() noexcept
 	T3_Board::clear_board();
 }
 
+void t3g::T3_Match::clear_board(T3_cell_state default_symbol) noexcept
+{
+	m_turn_switch = default_symbol;
+
+	if (m_turn_switch != T3_cell_state::X_STATE && m_turn_switch != T3_cell_state::O_STATE)
+	{
+		m_turn_switch = T3_cell_state::X_STATE;
+	}
+
+	T3_Board::clear_board();
+}
+
 t3g::T3_cell_state t3g::T3_Match::get_curr_symbol() const
 {
 	return m_turn_switch;

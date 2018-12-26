@@ -18,6 +18,7 @@ namespace t3g
 		t3g::T3_board_state make_move(t3g::cell_loc x_loc, t3g::cell_loc y_loc);
 		t3g::T3_board_state make_move(t3g::cell_loc serial);
 		void clear_board() noexcept;
+		void clear_board(t3g::T3_cell_state default_symbol) noexcept;
 
 		t3g::T3_cell_state get_curr_symbol() const;
 

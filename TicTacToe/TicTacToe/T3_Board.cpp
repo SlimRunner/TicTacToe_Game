@@ -2,7 +2,7 @@
 
 #define WIN_MASK(bField, mask) ((bField & mask) == mask)
 
-size_t get_xy_index(size_t x_loc, size_t y_loc, size_t width)
+static size_t get_xy_index(size_t x_loc, size_t y_loc, size_t width)
 {
 	return x_loc + y_loc * width;
 }
