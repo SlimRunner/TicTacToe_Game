@@ -137,7 +137,6 @@ t3g::T3_cell_state tic::TicTacToe_cli::chooseSym_prompt(const char * message)
 	char userSel;
 
 	std::cout << getSymbol(m_starting_symbol) << " goes first\n";
-	std::cout << message << "[X/O]: ";
 	do
 	{
 		userSel = prompt_getChar(message, true);
