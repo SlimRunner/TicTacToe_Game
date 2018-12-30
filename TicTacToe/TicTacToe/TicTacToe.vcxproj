@@ -117,12 +117,14 @@
   <ItemGroup>
     <ClInclude Include="T3_Board.h" />
     <ClInclude Include="T3_Match.h" />
+    <ClInclude Include="TicTacToe_AI.h" />
     <ClInclude Include="TicTacToe_cli.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="T3_Board.cpp" />
     <ClCompile Include="T3_Match.cpp" />
+    <ClCompile Include="TicTacToe_AI.cpp" />
     <ClCompile Include="TicTacToe_cli.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,4 +1,5 @@
 #include "TicTacToe_cli.h"
+#include "TicTacToe_AI.h"
 #include <iostream>
 #include <string>
 
@@ -9,7 +10,8 @@ static const char ASTERISK_SEPARATOR[65] = "************************************
 static char prompt_getChar(const char *, bool);
 
 tic::TicTacToe_cli::TicTacToe_cli() :
-	m_thisMatch(t3g::T3_cell_state::X_STATE)
+	m_thisMatch(t3g::T3_cell_state::X_STATE),
+	m_ai_diff(AI_Level::AI_MEDIUM)
 {
 	m_starting_symbol = m_thisMatch.get_curr_symbol();
 }
@@ -63,8 +65,8 @@ tic::OptPlayMatch tic::TicTacToe_cli::runPlayMenu()
 	std::cout << "\nMAIN MENU > PLAY MATCH\n\n"; //cascade pass the menu name as argument to the next menu
 
 	std::cout << "1v1 match\t(" << ENUM_TO_INT(OptPlayMatch::SUB_1V1) << ")\n";
-	/*std::cout << "Match vs AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_AI) << ")\n";
-	std::cout << "1v1 rev match\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_1V1) << ")\n";
+	std::cout << "Match vs AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_AI) << ")\n";
+	/*std::cout << "1v1 rev match\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_1V1) << ")\n";
 	std::cout << "Rev Match vs AI\t(" << ENUM_TO_INT(OptPlayMatch::SUB_REV_AI) << ")\n";*/
 	std::cout << "Go back\t\t(" << ENUM_TO_INT(OptPlayMatch::SUB_EXIT) << ")\n";
 	userSel = static_cast<OptPlayMatch>(prompt_getChar("\nSelect an option: ", true));
@@ -72,11 +74,12 @@ tic::OptPlayMatch tic::TicTacToe_cli::runPlayMenu()
 	switch (userSel)
 	{
 	case tic::OptPlayMatch::SUB_1V1:
-		runMatch();
+		runMatch(false);
 		break;
-	/*case tic::OptPlayMatch::SUB_AI:
+	case tic::OptPlayMatch::SUB_AI:
+		runMatch(true);
 		break;
-	case tic::OptPlayMatch::SUB_REV_1V1:
+	/*case tic::OptPlayMatch::SUB_REV_1V1:
 		break;
 	case tic::OptPlayMatch::SUB_REV_AI:
 		break;*/
@@ -129,7 +132,32 @@ tic::OptSettings tic::TicTacToe_cli::runSettings()
 	return userSel;
 }
 
-void tic::TicTacToe_cli::runMatch()
+t3g::T3_cell_state tic::TicTacToe_cli::chooseSym_prompt(const char * message)
+{
+	char userSel;
+
+	std::cout << getSymbol(m_starting_symbol) << " goes first\n";
+	std::cout << message << "[X/O]: ";
+	do
+	{
+		userSel = prompt_getChar(message, true);
+
+		switch (userSel)
+		{
+		case 'X':
+			return t3g::T3_cell_state::X_STATE;
+			//break;
+		case 'O':
+			return t3g::T3_cell_state::O_STATE;
+			//break;
+		default:
+			std::cout << "That's not a valid symbol";
+			break;
+		}
+	} while (true);
+}
+
+void tic::TicTacToe_cli::runMatch(bool ai_match)
 {
 	const char SOFT_SEPARATOR[33] = "--------------------------------";
 	size_t turnCount = 1;
@@ -152,6 +180,15 @@ void tic::TicTacToe_cli::runMatch()
 	
 	std::cout << "To input a symbol use the numeric keyboard\n\n";
 	
+	TicTacToe_AI thisAI(m_ai_diff);
+	t3g::T3_cell_state userSymbol = t3g::T3_cell_state::NULL_STATE;
+
+	if (ai_match)
+	{
+		std::cout << SOFT_SEPARATOR << "\n";
+		userSymbol = chooseSym_prompt("Select your symbol [X/O]: ");
+	}
+
 	do
 	{
 		std::cout << SOFT_SEPARATOR << "\n";
@@ -160,16 +197,24 @@ void tic::TicTacToe_cli::runMatch()
 		
 		printBoard();
 
-		char symLoc;
+		char symLoc; /*location to insert next symbol*/
 		t3g::cell_loc serialLoc;
+		
 
 		try
 		{
-			symLoc = prompt_getChar("Make move: ", false);
-			while (m_thisMatch.get_cell_condition(serialLoc = getSerialFromKeypad(symLoc)) != t3g::T3_cell_condition::NORMAL)
+			if (!ai_match || userSymbol == m_thisMatch.get_curr_symbol())
 			{
-				std::cout << "This cell is occupied already\n";
 				symLoc = prompt_getChar("Make move: ", false);
+				while (m_thisMatch.get_cell_condition(serialLoc = getSerialFromKeypad(symLoc)) != t3g::T3_cell_condition::NORMAL)
+				{
+					std::cout << "This cell is occupied already\n";
+					symLoc = prompt_getChar("Make move: ", false);
+				}
+			}
+			else
+			{
+				serialLoc = thisAI.get_move(m_thisMatch);
 			}
 
 			m_thisMatch.make_move(serialLoc);
@@ -191,6 +236,7 @@ void tic::TicTacToe_cli::runMatch()
 	std::cout << "Final board\n\n";
 	printBoard();
 
+	/*This switch could be sent to it's own function*/
 	switch (m_thisMatch.get_board_status())
 	{
 	case t3g::T3_board_state::TIED_BOARD:

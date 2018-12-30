@@ -47,12 +47,18 @@ namespace tic
 		t3g::T3_Match m_thisMatch;
 
 		t3g::T3_cell_state m_starting_symbol;
+		AI_Level m_ai_diff;
 
 		OptMainMenu runMainMenu();
 		OptPlayMatch runPlayMenu();
 		OptSettings runSettings();
 
-		void runMatch();
+		//shows a quick prompt to set the difficulty of the AI
+		void setDifficulty_prompt();
+		//shows a quick prompt to retrieve the symbol the player wants to use when playing against the AI
+		t3g::T3_cell_state chooseSym_prompt(const char * message);
+		
+		void runMatch(bool ai_match);
 		char getSymbol(t3g::T3_cell_state) const;
 		t3g::cell_loc getSerialFromKeypad(char) const;
 	};
