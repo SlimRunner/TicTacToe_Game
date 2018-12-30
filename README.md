@@ -1,5 +1,5 @@
 # TicTacToe_Game
-A series of classes that manage a match of Tic Tac Toe. The implementation of the game is completely separated from it's current command-line interface.
+A series of classes that manage a match of Tic Tac Toe. The implementation of the game is completely separated from its current command-line interface.
 
 ## Instructions - Visual Studio
 1. Download the folder at the root of the repository named 'TicTacToe'
