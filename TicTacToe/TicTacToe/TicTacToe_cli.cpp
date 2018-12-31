@@ -49,6 +49,7 @@ tic::OptMainMenu tic::TicTacToe_cli::runMainMenu()
 		do {} while (runSettings() != OptSettings::SUB_EXIT);
 		break;
 	case tic::OptMainMenu::MNU_EXIT:
+		//exit managed by caller
 		break;
 	default:
 		std::cout << "\nThat is not a valid command.\n\a";
@@ -84,6 +85,7 @@ tic::OptPlayMatch tic::TicTacToe_cli::runPlayMenu()
 	case tic::OptPlayMatch::SUB_REV_AI:
 		break;*/
 	case tic::OptPlayMatch::SUB_EXIT:
+		//exit managed by caller
 		break;
 	default:
 		std::cout << "\nThat is not a valid command.\n\a";
@@ -100,8 +102,8 @@ tic::OptSettings tic::TicTacToe_cli::runSettings()
 	std::cout << "\n" << ASTERISK_SEPARATOR;
 	std::cout << "\nMAIN MENU > SETTINGS\n\n"; //cascade pass the menu name as argument to the next menu
 
-	std::cout << "Default symbol\t(" << ENUM_TO_INT(OptSettings::SUB_DEF_SYMBOL) << ") Current symbol is " << getSymbol(m_starting_symbol) << "\n";
-	/*std::cout << "AI difficulty\t\t(" << ENUM_TO_INT(OptSettings::SUB_AI_DIFFICULTY) << ")\n";*/
+	std::cout << "Toggle symbol\t(" << ENUM_TO_INT(OptSettings::SUB_DEF_SYMBOL) << ") -> " << getSymbol(m_starting_symbol) << " moves first\n";
+	std::cout << "AI difficulty\t(" << ENUM_TO_INT(OptSettings::SUB_AI_DIFFICULTY) << ") -> " << getDiffName(m_ai_diff) << "\n";
 	std::cout << "Go back\t\t(" << ENUM_TO_INT(OptSettings::SUB_EXIT) << ")\n";
 	userSel = static_cast<OptSettings>(prompt_getChar("\nSelect an option: ", true));
 
@@ -118,11 +120,15 @@ tic::OptSettings tic::TicTacToe_cli::runSettings()
 		}
 
 		m_thisMatch.clear_board(m_starting_symbol);
+		std::cout << "\nDefault symbol was changed.\n";
 
 		break;
-		/*case tic::OptSettings::SUB_AI_DIFFICULTY:
-			break;*/
+	case tic::OptSettings::SUB_AI_DIFFICULTY:
+		setDifficulty_prompt();
+		std::cout << "\nAi difficulty was changed.\n";
+		break;
 	case tic::OptSettings::SUB_EXIT:
+		//exit managed by caller
 		break;
 	default:
 		std::cout << "\nThat is not a valid command.\n\a";
@@ -130,6 +136,38 @@ tic::OptSettings tic::TicTacToe_cli::runSettings()
 	}
 
 	return userSel;
+}
+
+void tic::TicTacToe_cli::setDifficulty_prompt()
+{
+	AI_Level userSel;
+	bool killSwitch = false;
+	const char SOFT_SEPARATOR[33] = "--------------------------------";
+
+	std::cout << "\n" << SOFT_SEPARATOR;
+	std::cout << "\nSelect AI difficulty:\n\n"; //cascade pass the menu name as argument to the next menu
+
+	std::cout << "Easy\t(1)\n";
+	std::cout << "Medium\t(2)\n";
+	std::cout << "Hard\t(3)\n";
+
+	do
+	{
+		userSel = static_cast<AI_Level>(prompt_getChar("\nSelect an option: ", true)-'1');
+
+		switch (userSel)
+		{
+		case tic::AI_Level::AI_EASY:
+		case tic::AI_Level::AI_MEDIUM:
+		case tic::AI_Level::AI_HARD:
+			m_ai_diff = userSel;
+			killSwitch = true;
+			break;
+		default:
+			std::cout << "That's not a valid symbol\n";
+			break;
+		}
+	} while (!killSwitch);
 }
 
 t3g::T3_cell_state tic::TicTacToe_cli::chooseSym_prompt(const char * message)
@@ -143,36 +181,50 @@ t3g::T3_cell_state tic::TicTacToe_cli::chooseSym_prompt(const char * message)
 
 		switch (userSel)
 		{
-		case 'X':
-			return t3g::T3_cell_state::X_STATE;
-			//break;
-		case 'O':
-			return t3g::T3_cell_state::O_STATE;
-			//break;
+		case 'X': return t3g::T3_cell_state::X_STATE;
+		case 'O': return t3g::T3_cell_state::O_STATE;
 		default:
-			std::cout << "That's not a valid symbol";
+			std::cout << "That's not a valid symbol\n";
 			break;
 		}
 	} while (true);
+}
+
+void tic::TicTacToe_cli::printBoard()
+{
+	for (int y = 0; y < t3g::BOARD_SIDES; ++y)
+	{
+		for (int x = 0; x < t3g::BOARD_SIDES; ++x)
+		{
+			std::cout << getSymbol(m_thisMatch.get_cell_state(x, y)) << "\t";
+		}
+		std::cout << "\n\n";
+	}
+}
+
+void tic::TicTacToe_cli::printResult()
+{
+	switch (m_thisMatch.get_board_status())
+	{
+	case t3g::T3_board_state::TIED_BOARD:
+		std::cout << "DRAW\n\n";
+		break;
+	case t3g::T3_board_state::X_WIN_BOARD:
+		std::cout << "X WINS!!\n\n";
+		break;
+	case t3g::T3_board_state::O_WIN_BOARD:
+		std::cout << "O WINS!!\n\n";
+		break;
+	default:
+		std::cout << "This should have not happened!!\n\n";
+		break;
+	}
 }
 
 void tic::TicTacToe_cli::runMatch(bool ai_match)
 {
 	const char SOFT_SEPARATOR[33] = "--------------------------------";
 	size_t turnCount = 1;
-
-	//lambda expression to print board
-	auto printBoard = [&]()
-	{
-		for (int y = 0; y < t3g::BOARD_SIDES; ++y)
-		{
-			for (int x = 0; x < t3g::BOARD_SIDES; ++x)
-			{
-				std::cout << getSymbol(m_thisMatch.get_cell_state(x, y)) << "\t";
-			}
-			std::cout << "\n\n";
-		}
-	};
 
 	std::cout << "\n" << ASTERISK_SEPARATOR;
 	std::cout << "\nMAIN MENU > PLAY MATCH > 1v1\n\n"; //cascade pass the menu name as argument to the next menu
@@ -199,7 +251,6 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 		char symLoc; /*location to insert next symbol*/
 		t3g::cell_loc serialLoc;
 		
-
 		try
 		{
 			if (!ai_match || userSymbol == m_thisMatch.get_curr_symbol())
@@ -234,23 +285,7 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 	std::cout << SOFT_SEPARATOR << "\n";
 	std::cout << "Final board\n\n";
 	printBoard();
-
-	/*This switch could be sent to it's own function*/
-	switch (m_thisMatch.get_board_status())
-	{
-	case t3g::T3_board_state::TIED_BOARD:
-		std::cout << "DRAW\n\n";
-		break;
-	case t3g::T3_board_state::X_WIN_BOARD:
-		std::cout << "X WINS!!\n\n";
-		break;
-	case t3g::T3_board_state::O_WIN_BOARD:
-		std::cout << "O WINS!!\n\n";
-		break;
-	default:
-		std::cout << "This should have not happened!!\n\n";
-		break;
-	}
+	printResult();
 
 	std::cout << "press any key to continue...";
 	std::cin.get(); //pause
@@ -259,24 +294,24 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 
 char tic::TicTacToe_cli::getSymbol(t3g::T3_cell_state thisCell) const
 {
-	char retVal;
 	switch (thisCell)
 	{
-	case t3g::T3_cell_state::NULL_STATE:
-		retVal = '-';
-		break;
-	case t3g::T3_cell_state::X_STATE:
-		retVal = 'X';
-		break;
-	case t3g::T3_cell_state::O_STATE:
-		retVal = 'O';
-		break;
-	default:
-		retVal = '\0';
-		break;
+	case t3g::T3_cell_state::NULL_STATE: return '-';
+	case t3g::T3_cell_state::X_STATE: return 'X';
+	case t3g::T3_cell_state::O_STATE: return 'O';
+	default: return '\0';
 	}
+}
 
-	return retVal;
+const char * tic::TicTacToe_cli::getDiffName(AI_Level diffSerial) const
+{
+	switch (diffSerial)
+	{
+	case tic::AI_Level::AI_EASY: return "Easy";
+	case tic::AI_Level::AI_MEDIUM: return "Medium";
+	case tic::AI_Level::AI_HARD: return "Hard";
+	default: return "";
+	}
 }
 
 t3g::cell_loc tic::TicTacToe_cli::getSerialFromKeypad(char inCharacter) const
@@ -285,39 +320,17 @@ t3g::cell_loc tic::TicTacToe_cli::getSerialFromKeypad(char inCharacter) const
 
 	switch (inCharacter)
 	{
-	case '7': //upper left
-		retVal = 0;
-		break;
-	case '8': //upper middle
-		retVal = 1;
-		break;
-	case '9': //upper right
-		retVal = 2;
-		break;
-	case '4': //mid left
-		retVal = 3;
-		break;
-	case '5': //mid middle
-		retVal = 4;
-		break;
-	case '6': //mid right
-		retVal = 5;
-		break;
-	case '1': //lower left
-		retVal = 6;
-		break;
-	case '2': //lower middle
-		retVal = 7;
-		break;
-	case '3': //lower right
-		retVal = 8;
-		break;
-	default:
-		retVal = UINT_MAX;
-		break;
+	case '7': return 0U; //upper left
+	case '8': return 1U; //upper middle
+	case '9': return 2U; //upper right
+	case '4': return 3U; //mid left
+	case '5': return 4U; //mid middle
+	case '6': return 5U; //mid right
+	case '1': return 6U; //lower left
+	case '2': return 7U; //lower middle
+	case '3': return 8U; //lower right
+	default: return UINT_MAX; //error
 	}
-
-	return retVal;
 }
 
 ///<summary>Shows a prompt to the user, accepts a char input, and then returns the character to the caller.</summary>

@@ -52,14 +52,17 @@ namespace tic
 		OptMainMenu runMainMenu();
 		OptPlayMatch runPlayMenu();
 		OptSettings runSettings();
-
 		//shows a quick prompt to set the difficulty of the AI
 		void setDifficulty_prompt();
+
 		//shows a quick prompt to retrieve the symbol the player wants to use when playing against the AI
 		t3g::T3_cell_state chooseSym_prompt(const char * message);
 		
+		void printBoard();
+		void printResult();
 		void runMatch(bool ai_match);
 		char getSymbol(t3g::T3_cell_state) const;
+		const char * getDiffName(AI_Level) const;
 		t3g::cell_loc getSerialFromKeypad(char) const;
 	};
 }
