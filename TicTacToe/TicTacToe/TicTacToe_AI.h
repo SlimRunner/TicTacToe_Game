@@ -5,7 +5,7 @@
 namespace t3g
 {
 	class T3_Match; //forward declaration
-	typedef unsigned int cell_loc; //re-declaration
+	typedef size_t cell_loc; //re-declaration
 }
 
 namespace tic

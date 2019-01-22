@@ -6,7 +6,7 @@ namespace t3g
 	constexpr size_t BOARD_SIZE = 9; //Total of cells in the board
 	constexpr size_t BOARD_SIDES = 3; //Size of sides of board. Board is a square.
 
-	typedef unsigned int cell_loc; //defines the serial number of a cell, its location.
+	typedef size_t cell_loc; //defines the serial number of a cell, its location.
 
 	enum class T3_cell_state
 	{
