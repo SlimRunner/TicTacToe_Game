@@ -255,14 +255,12 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 		{
 			if (!ai_match || userSymbol == m_thisMatch.get_curr_symbol())
 			{
-				thisAI.get_move(m_thisMatch); //TEMP LINE REMOVE LATER
 				symLoc = prompt_getChar("Make move: ", false);
-				if (symLoc == '0') goto TEMPOUT; //TEMP LINE REMOVE LATER
+
 				while (m_thisMatch.get_cell_condition(serialLoc = getSerialFromKeypad(symLoc)) != t3g::T3_cell_condition::NORMAL)
 				{
 					std::cout << "This cell is occupied already\n";
 					symLoc = prompt_getChar("Make move: ", false);
-					if (symLoc == '0') goto TEMPOUT; //TEMP LINE REMOVE LATER
 				}
 			}
 			else
@@ -292,7 +290,7 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 
 	std::cout << "press any key to continue...";
 	std::cin.get(); //pause
-TEMPOUT:
+
 	m_thisMatch.clear_board(m_starting_symbol);
 }
 
