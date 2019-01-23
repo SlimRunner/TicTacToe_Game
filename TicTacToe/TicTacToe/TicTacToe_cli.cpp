@@ -256,6 +256,7 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 			if (!ai_match || userSymbol == m_thisMatch.get_curr_symbol())
 			{
 				symLoc = prompt_getChar("Make move: ", false);
+
 				while (m_thisMatch.get_cell_condition(serialLoc = getSerialFromKeypad(symLoc)) != t3g::T3_cell_condition::NORMAL)
 				{
 					std::cout << "This cell is occupied already\n";
@@ -289,6 +290,7 @@ void tic::TicTacToe_cli::runMatch(bool ai_match)
 
 	std::cout << "press any key to continue...";
 	std::cin.get(); //pause
+
 	m_thisMatch.clear_board(m_starting_symbol);
 }
 
@@ -316,8 +318,6 @@ const char * tic::TicTacToe_cli::getDiffName(AI_Level diffSerial) const
 
 t3g::cell_loc tic::TicTacToe_cli::getSerialFromKeypad(char inCharacter) const
 {
-	t3g::cell_loc retVal;
-
 	switch (inCharacter)
 	{
 	case '7': return 0U; //upper left
