@@ -115,6 +115,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="MinMaxBoard.h" />
     <ClInclude Include="T3_Board.h" />
     <ClInclude Include="T3_Match.h" />
     <ClInclude Include="TicTacToe_AI.h" />
@@ -122,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MinMaxBoard.cpp" />
     <ClCompile Include="T3_Board.cpp" />
     <ClCompile Include="T3_Match.cpp" />
     <ClCompile Include="TicTacToe_AI.cpp" />

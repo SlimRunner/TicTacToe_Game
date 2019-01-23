@@ -3,7 +3,7 @@
 
 int main()
 {
-	tic::TicTacToe_cli thisMatch;
+	tic::TicTacToe_cli thisMatch(tic::AI_Level::AI_HARD);
 
 	thisMatch.runGame();
 	return 0;

@@ -16,6 +16,27 @@ tic::TicTacToe_cli::TicTacToe_cli() :
 	m_starting_symbol = m_thisMatch.get_curr_symbol();
 }
 
+tic::TicTacToe_cli::TicTacToe_cli(t3g::T3_cell_state starting_symbol) :
+	m_thisMatch(starting_symbol),
+	m_ai_diff(AI_Level::AI_MEDIUM)
+{
+	m_starting_symbol = m_thisMatch.get_curr_symbol();
+}
+
+tic::TicTacToe_cli::TicTacToe_cli(AI_Level ai_difficulty) :
+	m_thisMatch(t3g::T3_cell_state::X_STATE),
+	m_ai_diff(ai_difficulty)
+{
+	m_starting_symbol = m_thisMatch.get_curr_symbol();
+}
+
+tic::TicTacToe_cli::TicTacToe_cli(AI_Level ai_difficulty, t3g::T3_cell_state starting_symbol) :
+	m_thisMatch(starting_symbol),
+	m_ai_diff(ai_difficulty)
+{
+	m_starting_symbol = m_thisMatch.get_curr_symbol();
+}
+
 tic::TicTacToe_cli::~TicTacToe_cli()
 {
 	//nothing to do

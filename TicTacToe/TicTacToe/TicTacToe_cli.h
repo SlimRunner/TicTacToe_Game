@@ -39,6 +39,9 @@ namespace tic
 	{
 	public:
 		TicTacToe_cli();
+		TicTacToe_cli(t3g::T3_cell_state starting_symbol);
+		TicTacToe_cli(AI_Level ai_difficulty);
+		TicTacToe_cli(AI_Level ai_difficulty, t3g::T3_cell_state starting_symbol);
 		~TicTacToe_cli();
 
 		void runGame();

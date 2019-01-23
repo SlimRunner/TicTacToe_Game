@@ -196,8 +196,8 @@ bool t3g::T3_Board::is_win_state(size_t bit_field)
 		VERT_UPP = 0x49,
 		VERT_MID = 0x92,
 		VERT_LOW = 0x124,
-		DIAG_0T8 = 0x111,
-		DIAG_2T6 = 0x54
+		DIAG_0T8 = 0x111, //NW to SE
+		DIAG_2T6 = 0x54   //NE to SW
 	};
 
 	const size_t ARR_LEN = 8;
