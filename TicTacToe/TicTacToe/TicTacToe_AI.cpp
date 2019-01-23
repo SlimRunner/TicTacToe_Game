@@ -88,7 +88,7 @@ private:
 template <class T, class ... Args> T rand_select(T, Args ...) noexcept;
 template <class T> T rand_ratio_pick(T, T, float);
 MinMaxBoard get_choice_map(const t3g::T3_Match &);
-MinMaxScore t3_minimax(t3g::T3_Match, cell_loc, int, bool, const t3g::T3_cell_state & AI_symbol);
+MinMaxScore t3_minimax(t3g::T3_Match, cell_loc, int, bool);
 
 /*User-defined literal for percentage*/
 constexpr float operator "" _per(long double percent)
@@ -215,7 +215,7 @@ MinMaxBoard get_choice_map(const t3g::T3_Match & match)
 	{
 		if (match.get_cell_state(i) == t3g::T3_cell_state::NULL_STATE)
 		{
-			retVal[i] = t3_minimax(match, i, 0, true, match.get_curr_symbol());
+			retVal[i] = t3_minimax(match, i, 0, true);
 		}
 		else
 		{
@@ -243,7 +243,7 @@ inline MinMaxScore min_score(const MinMaxScore & bestVal, const MinMaxScore & ne
 }
 
 //MinMaxScore t3_minimax(t3g::T3_Match match, cell_loc seed_loc, int depth, bool isMax, t3g::T3_cell_state AI_symbol)
-MinMaxScore t3_minimax(t3g::T3_Match match, cell_loc seed_loc, int depth, bool isMax, const t3g::T3_cell_state & AI_symbol)
+MinMaxScore t3_minimax(t3g::T3_Match match, cell_loc seed_loc, int depth, bool isMax)
 {
 	const int SCORE_BOUND = 1000;
 	const int MAX_SCORE = 10;
@@ -270,7 +270,7 @@ MinMaxScore t3_minimax(t3g::T3_Match match, cell_loc seed_loc, int depth, bool i
 	{
 		if (match.get_cell_state(i) == t3g::T3_cell_state::NULL_STATE)
 		{
-			rec_score = t3_minimax(match, i, depth + 1, !isMax, AI_symbol);
+			rec_score = t3_minimax(match, i, depth + 1, !isMax);
 
 			if (isMax) //maximizer
 			{
