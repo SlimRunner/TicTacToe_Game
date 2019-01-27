@@ -2,10 +2,11 @@
 #include "MinMaxBoard.h"
 #include "T3_Match.h"
 
-#include <cstdlib>
-#include <ctime>
 #include <limits>
 #include <cassert>
+#include <cstdlib>
+#include <ctime>
+//#include <random> //SUGGESTION: use instead of ctime and cstdlib
 
 /*PROTOTYPES*/
 
@@ -78,47 +79,46 @@ t3g::cell_loc tic::TicTacToe_AI::get_move(const t3g::T3_Match & currMatch) const
 	}
 	else
 	{
-		mmx::MinMaxBoard choice_map;// = get_choice_map(currMatch);
-		choice_map.get(currMatch);
-		//TODO create function sorts somehow the choice map
-		//
+		mmx::MinMaxBoard choice_map;
+		choice_map.calc_board(currMatch);
 
 		switch (m_myDiff)
 		{
 		case tic::AI_Level::AI_EASY:
-			/*Select index which contains 1 rarely unless there is none, in that case select index with 0*/
-			/*select often index with -1*/
-			do
-			{
-				aiSel = rand() % t3g::BOARD_SIZE;
-			} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
+			//do
+			//{
+			//	aiSel = rand() % t3g::BOARD_SIZE;
+			//} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
+			//break;
+
+			//choose any rank of any type of move
+			aiSel = choice_map.rand_cell_query(mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::ANY);
+
 			break;
 		case tic::AI_Level::AI_MEDIUM:
-			/*Select sometimes index which contains 1 unless there is none, in that case select index with 0*/
-			/*select sometimes index with -1*/
-			do
-			{
-				aiSel = rand() % t3g::BOARD_SIZE;
-			} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
+			//do
+			//{
+			//	aiSel = rand() % t3g::BOARD_SIZE;
+			//} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
+			//break;
+
+			//80% of the time choose among any winning or tying move at random, and 20% of the time choose among losing moves or tying moves at random
+			//BUG BUG: out of bounds happen becuase sometimes the algorithm will try NOT to choose a losing move but that is the only move available.
+			aiSel = rand_ratio_pick(choice_map.rand_cell_query(mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::ANY),
+				choice_map.rand_cell_query(mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE, mmx::Rank_Range::HIGHEST | mmx::Rank_Range::ANY_MIDDLE),
+				80.0_per);
+
 			break;
 		case tic::AI_Level::AI_HARD:
-			/*Select always index which contains 1 unless there is none, in that case select index with 0*/
-			t3g::cell_loc best_choice;
-			int score;
-
-			best_choice = 0;
-			score = std::numeric_limits<int>::max();
-
-			for (t3g::cell_loc i = 0; i < t3g::BOARD_SIZE; ++i)
+			//choose the highest ranked winning move
+			aiSel = choice_map.rand_cell_query(mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::LOWEST);
+			//if there is none
+			if (aiSel > t3g::BOARD_SIZE)
 			{
-				if (choice_map(i).state != mmx::Mmb_States::OCCUPIED && choice_map(i).score < score)
-				{
-					best_choice = i;
-					score = choice_map(i).score;
-				}
+				//choose the highest ranked tying move
+				aiSel = choice_map.rand_cell_query(mmx::Mmb_States::TIE_MOVE, mmx::Rank_Range::HIGHEST);
 			}
 
-			aiSel = best_choice;
 			break;
 		default:
 			assert(false); //not a valid difficulty

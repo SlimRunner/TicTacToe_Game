@@ -22,9 +22,7 @@ namespace t3g
 		WIN_FLAG = 2
 	};
 	inline T3_cell_condition operator | (T3_cell_condition lhs, const T3_cell_condition & rhs)
-	{
-		return static_cast<T3_cell_condition>(static_cast<int>(lhs) | static_cast<int>(rhs));
-	}
+		{ return static_cast<T3_cell_condition>(static_cast<int>(lhs) | static_cast<int>(rhs));	}
 
 	enum class T3_board_state
 	{
