@@ -4,9 +4,8 @@
 
 #include <limits>
 #include <cassert>
-#include <cstdlib>
 #include <ctime>
-//#include <random> //SUGGESTION: use instead of ctime and cstdlib
+#include <random>
 
 /*PROTOTYPES*/
 
@@ -30,14 +29,14 @@ enum class tic::AI_Level
 tic::TicTacToe_AI::TicTacToe_AI() :
 	m_myDiff(AI_Level::AI_MEDIUM)
 {
-	srand(static_cast<unsigned int>(time(NULL)));
+	//Nothing To Do
 }
 
 //Constructor
 tic::TicTacToe_AI::TicTacToe_AI(AI_Level difficulty) :
 	m_myDiff(difficulty)
 {
-	srand(static_cast<unsigned int>(time(NULL)));
+	//Nothing To Do
 }
 
 tic::TicTacToe_AI::~TicTacToe_AI()
@@ -85,38 +84,49 @@ t3g::cell_loc tic::TicTacToe_AI::get_move(const t3g::T3_Match & currMatch) const
 		switch (m_myDiff)
 		{
 		case tic::AI_Level::AI_EASY:
-			//do
-			//{
-			//	aiSel = rand() % t3g::BOARD_SIZE;
-			//} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
-			//break;
-
 			//choose any rank of any type of move
-			aiSel = choice_map.rand_cell_query(mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::ANY);
+			aiSel = choice_map.rand_cell_query(
+				mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE,
+				mmx::Rank_Range::ANY_RANK);
 
 			break;
 		case tic::AI_Level::AI_MEDIUM:
-			//do
-			//{
-			//	aiSel = rand() % t3g::BOARD_SIZE;
-			//} while (currMatch.get_cell_state(aiSel) != t3g::T3_cell_state::NULL_STATE);
-			//break;
+			t3g::cell_loc smarter, random;
 
 			//80% of the time choose among any winning or tying move at random, and 20% of the time choose among losing moves or tying moves at random
-			//BUG BUG: out of bounds happen becuase sometimes the algorithm will try NOT to choose a losing move but that is the only move available.
-			aiSel = rand_ratio_pick(choice_map.rand_cell_query(mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::ANY),
-				choice_map.rand_cell_query(mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE, mmx::Rank_Range::HIGHEST | mmx::Rank_Range::ANY_MIDDLE),
-				80.0_per);
+
+			smarter = choice_map.rand_cell_query(
+				mmx::Mmb_States::TIE_MOVE | mmx::Mmb_States::WIN_MOVE,
+				mmx::Rank_Range::ANY_RANK);
+			random = choice_map.rand_cell_query(
+				mmx::Mmb_States::LOSE_MOVE | mmx::Mmb_States::TIE_MOVE,
+				mmx::Rank_Range::WORST_RANK | mmx::Rank_Range::MID_RANK);
+
+			//if smarter -> out of bounds and random -> within bounds
+			if (smarter >= t3g::BOARD_SIZE && random < t3g::BOARD_SIZE)
+			{
+				aiSel = random; //select random
+			}
+			//if random -> out of bounds and smarter -> within bounds
+			else if (random >= t3g::BOARD_SIZE && smarter < t3g::BOARD_SIZE)
+			{
+				aiSel = smarter; //select smarter
+			}
+			else
+			{
+				//select smarter 80% of the time, otherwise select random
+				aiSel = rand_ratio_pick(smarter, random, 80.0_per);
+			}
 
 			break;
 		case tic::AI_Level::AI_HARD:
-			//choose the highest ranked winning move
-			aiSel = choice_map.rand_cell_query(mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::LOWEST);
-			//if there is none
+			//choose the best ranked winning move
+			aiSel = choice_map.rand_cell_query(mmx::Mmb_States::WIN_MOVE, mmx::Rank_Range::BEST_RANK);
+			//if query was not successful
 			if (aiSel > t3g::BOARD_SIZE)
 			{
-				//choose the highest ranked tying move
-				aiSel = choice_map.rand_cell_query(mmx::Mmb_States::TIE_MOVE, mmx::Rank_Range::HIGHEST);
+				//choose the best ranked tying move
+				aiSel = choice_map.rand_cell_query(mmx::Mmb_States::TIE_MOVE, mmx::Rank_Range::BEST_RANK);
 			}
 
 			break;
@@ -132,19 +142,25 @@ t3g::cell_loc tic::TicTacToe_AI::get_move(const t3g::T3_Match & currMatch) const
 template<class T, class ... Args>
 T rand_select(T first, Args ... args) noexcept
 {
+	std::default_random_engine def_gene(static_cast<unsigned int>(time(NULL)));
+	std::uniform_int_distribution<size_t> uni_dist(0U, sizeof...(args));//
+
 	T arr[sizeof...(args) + 1] = { first, args... };
 
-	return arr[rand() % (sizeof...(args) + 1)];
+	return arr[uni_dist(def_gene)];
 }
 
 template <class T>
 T rand_ratio_pick(T in1, T in2, float ratio)
 {
+	std::default_random_engine def_gene(static_cast<unsigned int>(time(NULL)));
+	std::uniform_int_distribution<size_t> uni_dist(0U, std::numeric_limits<size_t>::max());
+
 	if (ratio >= 1) return in1; //one is always true
 	if (ratio <= 0) return in2; //zero is always false
 
-	int threshold = static_cast<int>((RAND_MAX + 1) * ratio);
-	int output = rand();
+	size_t threshold = static_cast<size_t>(std::numeric_limits<size_t>::max() * ratio);
+	size_t output = uni_dist(def_gene);
 
 	if (output < threshold)
 	{

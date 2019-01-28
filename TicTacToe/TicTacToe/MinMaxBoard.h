@@ -25,10 +25,10 @@ namespace mmx
 
 	enum class Rank_Range
 	{
-		LOWEST = 1,
-		ANY_MIDDLE = 2, //any number that neither highest or lowest
-		HIGHEST = 4,
-		ANY = LOWEST | ANY_MIDDLE | HIGHEST
+		BEST_RANK = 1,
+		MID_RANK = 2, //any number that neither highest or lowest
+		WORST_RANK = 4,
+		ANY_RANK = BEST_RANK | MID_RANK | WORST_RANK
 	};
 	inline Rank_Range operator | (Rank_Range lhs, const Rank_Range & rhs)
 		{ return static_cast<Rank_Range>(static_cast<int>(lhs) | static_cast<int>(rhs)); }
@@ -87,7 +87,7 @@ namespace mmx
 		/*Allows read only access to the value of the index*/
 		MinMaxScore operator [] (t3g::cell_loc index) const;
 
-		void calc_board(t3g::T3_Match match);
+		void calc_board(const t3g::T3_Match & match);
 		t3g::cell_loc rand_cell_query(Mmb_States state, Rank_Range rank);
 
 	private:
