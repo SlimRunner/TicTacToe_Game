@@ -5,6 +5,7 @@ A series of classes that manage a match of Tic Tac Toe. The implementation of th
 1. Download the folder at the root of the repository named 'TicTacToe'
 1. Open the sln file
 1. Compile to make sure it works.
+**Note:** you may need to re-target the SDK before compiling.
 
 ## Description of Classes
 * **T3_Board:** This class takes care of correctly assigning symbols (`X`, `O`, or `empty`) to the corresponding cells. It also has bound checks. It does not enforce rules of any kind (e.g. you can override an `X` with an `O`)
