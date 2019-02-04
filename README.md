@@ -5,6 +5,7 @@ A series of classes that manage a match of Tic Tac Toe. The implementation of th
 1. Download the folder at the root of the repository named 'TicTacToe'
 1. Open the sln file
 1. Compile to make sure it works.
+
 **Note:** you may need to re-target the SDK before compiling.
 
 ## Description of Classes
