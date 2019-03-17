@@ -1,12 +1,17 @@
 # TicTacToe_Game
 A series of classes that manage a match of Tic Tac Toe. The implementation of the game is completely separated from its current command-line interface.
 
-## Instructions - Visual Studio
+## Instructions To Compile
+### Visual Studio
 1. Download the folder at the root of the repository named 'TicTacToe'
 1. Open the sln file
 1. Compile to make sure it works.
 
-**Note:** you may need to re-target the SDK before compiling.
+**Note:** you may need to re-target the SDK version before compiling.
+
+## Instructions to Run/Install
+### Windows
+1. Simply download the latest version of the exe file from releases. It doesn't need any external dependencies just run it on download.
 
 ## Description of Classes
 * **T3_Board:** This class takes care of correctly assigning symbols (`X`, `O`, or `empty`) to the corresponding cells. It also has bound checks. It does not enforce rules of any kind (e.g. you can override an `X` with an `O`)
