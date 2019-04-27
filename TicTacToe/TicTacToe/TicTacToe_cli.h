@@ -2,6 +2,7 @@
 #define TICTACTOE_CLI_H
 
 #include "T3_Match.h"
+#include "TicTacToe_AI.h"
 
 namespace tic
 {
@@ -28,20 +29,13 @@ namespace tic
 		SUB_EXIT = '0'
 	};
 
-	enum class AI_Level
-	{
-		AI_EASY = 0,
-		AI_MEDIUM = 1,
-		AI_HARD = 2
-	};
-
 	class TicTacToe_cli
 	{
 	public:
 		TicTacToe_cli();
 		TicTacToe_cli(t3g::T3_cell_state starting_symbol);
-		TicTacToe_cli(AI_Level ai_difficulty);
-		TicTacToe_cli(AI_Level ai_difficulty, t3g::T3_cell_state starting_symbol);
+		TicTacToe_cli(tic::AI_Level ai_difficulty);
+		TicTacToe_cli(tic::AI_Level ai_difficulty, t3g::T3_cell_state starting_symbol);
 		~TicTacToe_cli();
 
 		void runGame();
@@ -50,7 +44,7 @@ namespace tic
 		t3g::T3_Match m_thisMatch;
 
 		t3g::T3_cell_state m_starting_symbol;
-		AI_Level m_ai_diff;
+		tic::AI_Level m_ai_diff;
 
 		OptMainMenu runMainMenu();
 		OptPlayMatch runPlayMenu();
@@ -65,7 +59,7 @@ namespace tic
 		void printResult();
 		void runMatch(bool ai_match);
 		char getSymbol(t3g::T3_cell_state) const;
-		const char * getDiffName(AI_Level) const;
+		const char * getDiffName(tic::AI_Level) const;
 		t3g::cell_loc getSerialFromKeypad(char) const;
 	};
 }

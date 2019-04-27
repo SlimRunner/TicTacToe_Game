@@ -1,5 +1,4 @@
 #include "TicTacToe_cli.h"
-#include "TicTacToe_AI.h"
 #include <iostream>
 #include <string>
 

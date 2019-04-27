@@ -18,13 +18,6 @@ constexpr float operator "" _per(long double percent)
 	return static_cast<float>(percent / 100);
 }
 
-enum class tic::AI_Level
-{
-	AI_EASY = 0,
-	AI_MEDIUM = 1,
-	AI_HARD = 2
-};
-
 //Default Constructor
 tic::TicTacToe_AI::TicTacToe_AI() :
 	m_myDiff(AI_Level::AI_MEDIUM)

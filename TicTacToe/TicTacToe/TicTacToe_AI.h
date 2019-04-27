@@ -10,7 +10,12 @@ namespace t3g
 
 namespace tic
 {
-	enum class AI_Level;
+	enum class AI_Level
+	{
+		AI_EASY = 0,
+		AI_MEDIUM = 1,
+		AI_HARD = 2
+	};
 
 	class TicTacToe_AI
 	{
